@@ -1,0 +1,262 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: Ubuntu
+  hosts: "{{ custom_hosts | default('all') }}"
+  become: yes
+  become_method: sudo
+  gather_facts: yes
+
+  tasks:
+    - name: Upgrade system
+      ansible.builtin.apt:
+        update_cache: yes
+        upgrade: dist
+        autoremove: yes
+        autoclean: yes
+      async: 3600
+      poll: 5
+      tags:
+        - system
+        - upgrade
+
+    - name: Install basic security packages
+      ansible.builtin.apt:
+        state: present
+        name:
+          - ufw
+          - gufw
+          - unattended-upgrades
+          - iptables-persistent
+          - logcheck
+      tags:
+        - system
+        - sec
+
+    - name: Install apparmor
+      ansible.builtin.apt:
+        state: present
+        name:
+          - apparmor 
+          - apparmor-profiles 
+          - apparmor-profiles-extra 
+          - apparmor-utils
+      tags:
+        - system
+        - apparmor
+
+    - name: Install tools
+      ansible.builtin.apt:
+        state: present
+        name:
+          - rsync
+          - vim
+          - vim-gui-common
+          - vim-runtime
+          - tmux
+          - htop
+          - curl
+          - expect
+          - tree
+          - build-essential 
+          - procps
+          - file
+          - acl
+          - git
+          - jq
+          - p7zip-full
+          - zip
+          - unzip
+          - unrar-free
+          - arj
+          - ark
+          - unp
+          - python3
+          - python3-pip
+          - python3-venv
+          - python3-apt
+          - bash-completion
+          - apt-transport-https
+          - apt-file
+          - command-not-found
+          - gnupg2
+          - gnupg-agent
+          - keepass2
+          - pass
+          - pwgen
+          - resolvconf
+          - remmina
+          - transmission
+          - wireshark
+          - nmap
+          - tcpdump
+          - dnsutils
+          - dsniff
+          - telnet
+          - ipcalc
+          - iptraf
+          - nethogs
+          - shellcheck
+          - flameshot
+          - renameutils # qmv, qcp, et al.
+          - units
+          - software-properties-common
+          - strace
+          - cmake
+          - lshw
+          - ccze
+          - djvulibre-bin 
+          - ghostscript
+          - gnuplot
+          - pdftk
+          - cmus
+      tags:
+        - system
+        - tools   
+
+    - name: Install LibreOffice
+      ansible.builtin.apt:
+        state: present
+        name:
+          - libreoffice
+          - libreoffice-plasma
+          - libreoffice-pdfimport
+      tags:
+        - office
+
+    - name: Install telegram-desktop
+      ansible.builtin.command: 
+        cmd: snap install telegram-desktop
+        creates: /snap/bin/telegram-desktop
+      tags:
+        - telegram       
+
+    - name: Add VSCodium GPG key
+      ansible.builtin.apt_key:
+        state: present
+        url: https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/-/raw/master/pub.gpg
+        keyring: /etc/apt/trusted.gpg.d/vscodium.gpg
+      tags:
+        - codium
+
+    - name: Add VSCodium APT repository
+      ansible.builtin.apt_repository:
+        state: present
+        repo: deb https://paulcarroty.gitlab.io/vscodium-deb-rpm-repo/debs/ vscodium main
+        filename: vscodium
+      tags:
+        - codium
+
+    - name: Install VSCodium
+      ansible.builtin.apt:
+        state: present
+        update_cache: yes
+        name:
+          - codium
+      tags:
+        - codium
+
+    - name: Install notes
+      get_url:
+        url: https://raw.githubusercontent.com/pimterry/notes/latest-release/notes
+        dest: /usr/local/bin/notes
+        owner: root
+        group: root
+        mode: '0755'
+      tags:
+        - notes
+
+    - name: Install notes bash completion
+      get_url:
+        url: https://raw.githubusercontent.com/pimterry/notes/latest-release/notes.bash_completion
+        dest: /etc/bash_completion.d/notes
+        owner: root
+        group: root
+        mode: '0644'
+      tags:
+        - notes
+
+    - name: Create linuxbrew group
+      group:
+        state: present
+        name: linuxbrew
+        system: yes
+      tags:
+        - homebrew
+
+    - name: Create linuxbrew user
+      user:
+        state: present
+        name: linuxbrew
+        create_home: no
+        home: /home/linuxbrew
+        system: yes
+        password: "*"
+        shell: /usr/sbin/nologin
+        group: linuxbrew
+      tags:
+        - homebrew
+
+    - name: Create /home/linuxbrew
+      file:
+        path: /home/linuxbrew
+        state: directory
+        owner: linuxbrew
+        group: linuxbrew
+        mode: u=rwX,g=rwX,o=rX
+        recurse: yes
+      tags:
+        - homebrew
+
+    - name: Clone Homebrew git repository
+      become_user: linuxbrew
+      ansible.builtin.git:
+        repo: https://github.com/Homebrew/brew.git
+        dest: /home/linuxbrew/.linuxbrew
+      tags:
+        - homebrew
+
+    - name: Set /home/linuxbrew/.linuxbrew permissions
+      file:
+        path: /home/linuxbrew/.linuxbrew
+        state: directory
+        owner: linuxbrew
+        group: linuxbrew
+        mode: u=rwX,g=rwX,o=rX
+        recurse: yes
+      tags:
+        - homebrew
+
+    - name: Add user {{ current_user }} to linuxbrew group
+      user:
+        name: "{{ current_user }}"
+        append: yes
+        groups: linuxbrew
+      tags:
+        - homebrew        
+
+    - name: Clone rbenv git repository
+      become_user: "{{ current_user }}"
+      ansible.builtin.git:
+        repo: https://github.com/rbenv/rbenv.git
+        dest: "/home/{{ current_user }}/.rbenv"
+      tags:
+        - rbenv
+
+    - name: Create .rbenv/plugins
+      file:
+        path: "/home/{{ current_user }}/.rbenv/plugins"
+        state: directory
+        owner: "{{ current_user }}"
+        group: "{{ current_user }}"
+        mode: u=rwX,g=rX,o=rX
+        recurse: yes
+      tags:
+        - rbenv
+
+    - name: Clone ruby-build git repository
+      become_user: "{{ current_user }}"
+      ansible.builtin.git:
+        repo: https://github.com/rbenv/ruby-build.git
+        dest: "/home/{{ current_user }}/.rbenv/plugins/ruby-build"
+      tags:
+        - rbenv
