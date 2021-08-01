@@ -203,7 +203,6 @@
     #     owner: linuxbrew
     #     group: linuxbrew
     #     mode: u=rwX,g=rwX,o=rX
-    #     recurse: yes
     #   tags:
     #     - homebrew
 
@@ -219,8 +218,8 @@
     #   file:
     #     path: /home/linuxbrew/.linuxbrew
     #     state: directory
-    #     owner: linuxbrew
-    #     group: linuxbrew
+    #     owner: "{{ current_user }}"
+    #     group: "{{ current_user }}"
     #     mode: u=rwX,g=rwX,o=rX
     #     recurse: yes
     #   tags:
