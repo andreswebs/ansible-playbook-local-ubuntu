@@ -12,6 +12,13 @@ sudo apt install python3 python3-pip
 python3 -m pip install --user ansible
 ```
 
+Install Ansible roles:
+
+```sh
+ansible-galaxy install andreswebs.docker
+ansible-galaxy install andreswebs.nodejs
+```
+
 ## Run
 
 Run the playbook on the localhost:
