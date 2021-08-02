@@ -22,6 +22,7 @@
     - name: Install basic security packages
       ansible.builtin.apt:
         state: present
+        update_cache: yes
         name:
           - ufw
           - gufw
@@ -35,6 +36,7 @@
     - name: Install apparmor
       ansible.builtin.apt:
         state: present
+        update_cache: yes
         name:
           - apparmor 
           - apparmor-profiles 
@@ -44,9 +46,27 @@
         - system
         - apparmor
 
+    - name: Install qemu
+      ansible.builtin.apt:
+        state: present
+        update_cache: yes
+        name:
+          - qemu-system 
+          - qemu-kvm 
+          - libvirt-clients 
+          - libguestfs-tools 
+          - libvirt-daemon-system 
+          - virtinst 
+          - bridge-utils 
+          - dnsmasq
+      tags:
+        - system
+        - qemu
+
     - name: Install tools
       ansible.builtin.apt:
         state: present
+        update_cache: yes
         name:
           - rsync
           - vim
@@ -116,6 +136,7 @@
     - name: Install LibreOffice
       ansible.builtin.apt:
         state: present
+        update_cache: yes
         name:
           - libreoffice
           - libreoffice-plasma
@@ -175,63 +196,65 @@
       tags:
         - notes
 
-    # - name: Create linuxbrew group
-    #   group:
-    #     state: present
-    #     name: linuxbrew
-    #     system: yes
-    #   tags:
-    #     - homebrew
+    - name: Create linuxbrew group
+      group:
+        state: present
+        name: linuxbrew
+        system: yes
+      tags:
+        - homebrew
 
-    # - name: Create linuxbrew user
-    #   user:
-    #     state: present
-    #     name: linuxbrew
-    #     create_home: no
-    #     home: /home/linuxbrew
-    #     system: yes
-    #     password: "*"
-    #     shell: /usr/sbin/nologin
-    #     group: linuxbrew
-    #   tags:
-    #     - homebrew
+    - name: Create linuxbrew user
+      user:
+        state: present
+        name: linuxbrew
+        create_home: no
+        home: /home/linuxbrew
+        system: yes
+        password: "*"
+        shell: /usr/sbin/nologin
+        group: linuxbrew
+      tags:
+        - homebrew
 
-    # - name: Create /home/linuxbrew
-    #   file:
-    #     path: /home/linuxbrew
-    #     state: directory
-    #     owner: linuxbrew
-    #     group: linuxbrew
-    #     mode: u=rwX,g=rwX,o=rX
-    #   tags:
-    #     - homebrew
+    - name: Create /home/linuxbrew
+      file:
+        path: /home/linuxbrew
+        state: directory
+        owner: linuxbrew
+        group: linuxbrew
+        mode: u=rwX,g=rwX,o=rX
+      tags:
+        - homebrew
 
-    # - name: Clone Homebrew git repository
-    #   become_user: linuxbrew
-    #   ansible.builtin.git:
-    #     repo: https://github.com/Homebrew/brew.git
-    #     dest: /home/linuxbrew/.linuxbrew
-    #   tags:
-    #     - homebrew
+    - name: Clone Homebrew git repository
+      become_user: linuxbrew
+      ansible.builtin.git:
+        repo: https://github.com/Homebrew/brew.git
+        dest: /home/linuxbrew/.linuxbrew
+        clone: no
+        update: no        
+      tags:
+        - homebrew
 
-    # - name: Set /home/linuxbrew/.linuxbrew permissions
-    #   file:
-    #     path: /home/linuxbrew/.linuxbrew
-    #     state: directory
-    #     owner: "{{ current_user }}"
-    #     group: "{{ current_user }}"
-    #     mode: u=rwX,g=rwX,o=rX
-    #     recurse: yes
-    #   tags:
-    #     - homebrew
+    - name: Set /home/linuxbrew/.linuxbrew permissions
+      file:
+        path: /home/linuxbrew/.linuxbrew
+        state: directory
+        owner: "{{ current_user }}"
+        group: "{{ current_user }}"
+        mode: u=rwX,g=rwX,o=rX
+        recurse: yes
+      tags:
+        - homebrew
 
-    # - name: Add user {{ current_user }} to linuxbrew group
-    #   user:
-    #     name: "{{ current_user }}"
-    #     append: yes
-    #     groups: linuxbrew
-    #   tags:
-    #     - homebrew        
+    - name: Add user {{ current_user }} to linuxbrew group
+      user:
+        name: "{{ current_user }}"
+        append: yes
+        groups: linuxbrew
+      tags:
+        - homebrew        
 
     - name: Clone rbenv git repository
       become_user: "{{ current_user }}"
@@ -248,7 +271,7 @@
         owner: "{{ current_user }}"
         group: "{{ current_user }}"
         mode: u=rwX,g=rX,o=rX
-        recurse: yes
+        recurse: no
       tags:
         - rbenv
 
@@ -259,3 +282,34 @@
         dest: "/home/{{ current_user }}/.rbenv/plugins/ruby-build"
       tags:
         - rbenv
+
+    - name: Add Hashicorp GPG key
+      ansible.builtin.apt_key:
+        state: present
+        url: https://apt.releases.hashicorp.com/gpg
+        keyring: /etc/apt/trusted.gpg.d/hashicorp.gpg
+      tags:
+        - vagrant
+
+    - name: Add Hashicorp APT repository
+      ansible.builtin.apt_repository:
+        state: present
+        repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_distribution_release | lower }} main"
+        filename: hashicorp
+      tags:
+        - vagrant
+
+    - name: Install Vagrant
+      ansible.builtin.apt:
+        state: present
+        update_cache: yes
+        name:
+          - vagrant
+      tags:
+        - vagrant
+
+    - name: Role andreswebs.docker
+      include_role:
+        name: andreswebs.docker
+      tags:
+        - docker
