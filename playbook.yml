@@ -94,6 +94,9 @@
           - python3-pip
           - python3-venv
           - python3-apt
+          - python3-setuptools
+          - python3-yaml
+          - python3-defusedxml
           - bash-completion
           - apt-transport-https
           - apt-file
@@ -101,7 +104,6 @@
           - gnupg2
           - gnupg-agent
           - keepass2
-          - pass
           - pwgen
           - resolvconf
           - remmina
@@ -132,6 +134,39 @@
       tags:
         - system
         - tools   
+
+    # https://github.com/roddhjav/pass-import
+    - name: Add pass-extension-import GPG key
+      ansible.builtin.apt_key:
+        state: present
+        url: https://pkg.pujol.io/debian/gpgkey
+        keyring: /etc/apt/trusted.gpg.d/pass-import.gpg
+      tags:
+        - pass
+
+    - name: Add pass-extension-import APT repository
+      ansible.builtin.apt_repository:
+        state: present
+        repo: deb [arch=amd64] https://pkg.pujol.io/debian/repo all main
+        filename: pass-import
+      tags:
+        - pass
+
+    - name: Install pass
+      ansible.builtin.apt:
+        state: present
+        update_cache: yes
+        name:
+          - pass
+          - pass-extension-import   
+      tags:
+        - pass
+
+    - name: Install pykeepass
+      ansible.builtin.pip:
+        name: pykeepass
+      tags:
+        - pass
 
     - name: Install LibreOffice
       ansible.builtin.apt:
