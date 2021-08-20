@@ -25,7 +25,6 @@
         update_cache: yes
         name:
           - ufw
-          - gufw
           - unattended-upgrades
           - iptables-persistent
           - logcheck
