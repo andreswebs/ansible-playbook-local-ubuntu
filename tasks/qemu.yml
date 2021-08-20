@@ -1,0 +1,17 @@
+---
+- name: Install qemu
+  ansible.builtin.apt:
+    state: present
+    update_cache: yes
+    name:
+      - qemu-system 
+      - qemu-kvm 
+      - libvirt-clients 
+      - libguestfs-tools 
+      - libvirt-daemon-system 
+      - virtinst 
+      - bridge-utils 
+      - dnsmasq
+  tags:
+    - system
+    - qemu

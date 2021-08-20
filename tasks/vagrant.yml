@@ -1,0 +1,25 @@
+---
+- name: Add Hashicorp GPG key
+  ansible.builtin.apt_key:
+    state: present
+    url: https://apt.releases.hashicorp.com/gpg
+    keyring: /etc/apt/trusted.gpg.d/hashicorp.gpg
+  tags:
+    - vagrant
+
+- name: Add Hashicorp APT repository
+  ansible.builtin.apt_repository:
+    state: present
+    repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_distribution_release | lower }} main"
+    filename: hashicorp
+  tags:
+    - vagrant
+
+- name: Install Vagrant
+  ansible.builtin.apt:
+    state: present
+    update_cache: yes
+    name:
+      - vagrant
+  tags:
+    - vagrant

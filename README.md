@@ -8,7 +8,11 @@ Install Ansible:
 
 ```sh
 sudo apt update
+```
+```sh
 sudo apt install python3 python3-pip
+```
+```sh
 python3 -m pip install --user ansible
 ```
 
@@ -16,6 +20,8 @@ Install Ansible roles:
 
 ```sh
 ansible-galaxy install andreswebs.docker
+```
+```sh
 ansible-galaxy install andreswebs.nodejs
 ```
 

@@ -1,0 +1,60 @@
+---
+- name: Create linuxbrew group
+  group:
+    state: present
+    name: linuxbrew
+    system: yes
+  tags:
+    - homebrew
+
+- name: Create linuxbrew user
+  user:
+    state: present
+    name: linuxbrew
+    create_home: no
+    home: /home/linuxbrew
+    system: yes
+    password: "*"
+    shell: /usr/sbin/nologin
+    group: linuxbrew
+  tags:
+    - homebrew
+
+- name: Create /home/linuxbrew
+  file:
+    path: /home/linuxbrew
+    state: directory
+    owner: linuxbrew
+    group: linuxbrew
+    mode: u=rwX,g=rwX,o=rX
+  tags:
+    - homebrew
+
+- name: Clone Homebrew git repository
+  become_user: linuxbrew
+  ansible.builtin.git:
+    repo: https://github.com/Homebrew/brew.git
+    dest: /home/linuxbrew/.linuxbrew
+    clone: no
+    update: no        
+  tags:
+    - homebrew
+
+- name: Set /home/linuxbrew/.linuxbrew permissions
+  file:
+    path: /home/linuxbrew/.linuxbrew
+    state: directory
+    owner: "{{ current_user }}"
+    group: "{{ current_user }}"
+    mode: u=rwX,g=rwX,o=rX
+    recurse: no
+  tags:
+    - homebrew
+
+- name: Add user {{ current_user }} to linuxbrew group
+  user:
+    name: "{{ current_user }}"
+    append: yes
+    groups: linuxbrew
+  tags:
+    - homebrew        

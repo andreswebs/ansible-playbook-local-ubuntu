@@ -1,0 +1,27 @@
+---
+- name: Clone rbenv git repository
+  become_user: "{{ current_user }}"
+  ansible.builtin.git:
+    repo: https://github.com/rbenv/rbenv.git
+    dest: "/home/{{ current_user }}/.rbenv"
+  tags:
+    - rbenv
+
+- name: Create .rbenv/plugins
+  file:
+    path: "/home/{{ current_user }}/.rbenv/plugins"
+    state: directory
+    owner: "{{ current_user }}"
+    group: "{{ current_user }}"
+    mode: u=rwX,g=rX,o=rX
+    recurse: no
+  tags:
+    - rbenv
+
+- name: Clone ruby-build git repository
+  become_user: "{{ current_user }}"
+  ansible.builtin.git:
+    repo: https://github.com/rbenv/ruby-build.git
+    dest: "/home/{{ current_user }}/.rbenv/plugins/ruby-build"
+  tags:
+    - rbenv

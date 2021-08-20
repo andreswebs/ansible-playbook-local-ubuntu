@@ -1,0 +1,82 @@
+---
+- name: Install desktop tools
+  ansible.builtin.apt:
+    state: present
+    update_cache: yes
+    name:
+      - keepass2
+      - remmina
+      - transmission
+      - wireshark
+      - shellcheck
+      - flameshot
+      - djvulibre-bin 
+      - ghostscript
+      - gnuplot
+      - pdftk
+      - cmus
+  tags:
+    - desktop
+
+- name: Install LibreOffice
+  ansible.builtin.apt:
+    state: present
+    update_cache: yes
+    name:
+      - libreoffice
+      - libreoffice-plasma
+      - libreoffice-pdfimport
+  tags:
+    - office
+
+- name: Install telegram-desktop
+  ansible.builtin.command: 
+    cmd: snap install telegram-desktop
+    creates: /snap/bin/telegram-desktop
+  tags:
+    - telegram       
+
+- name: Add VSCodium GPG key
+  ansible.builtin.apt_key:
+    state: present
+    url: https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/-/raw/master/pub.gpg
+    keyring: /etc/apt/trusted.gpg.d/vscodium.gpg
+  tags:
+    - codium
+
+- name: Add VSCodium APT repository
+  ansible.builtin.apt_repository:
+    state: present
+    repo: deb https://paulcarroty.gitlab.io/vscodium-deb-rpm-repo/debs/ vscodium main
+    filename: vscodium
+  tags:
+    - codium
+
+- name: Install VSCodium
+  ansible.builtin.apt:
+    state: present
+    update_cache: yes
+    name:
+      - codium
+  tags:
+    - codium
+
+- name: Install notes
+  get_url:
+    url: https://raw.githubusercontent.com/pimterry/notes/latest-release/notes
+    dest: /usr/local/bin/notes
+    owner: root
+    group: root
+    mode: '0755'
+  tags:
+    - notes
+
+- name: Install notes bash completion
+  get_url:
+    url: https://raw.githubusercontent.com/pimterry/notes/latest-release/notes.bash_completion
+    dest: /etc/bash_completion.d/notes
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - notes
