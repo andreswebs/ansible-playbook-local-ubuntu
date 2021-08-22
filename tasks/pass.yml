@@ -1,4 +1,13 @@
 ---
+- name: Install pass
+  ansible.builtin.apt:
+    state: present
+    update_cache: yes
+    name:
+      - pass
+  tags:
+    - pass
+
 # https://github.com/roddhjav/pass-import
 - name: Add pass-extension-import GPG key
   ansible.builtin.apt_key:
@@ -16,12 +25,11 @@
   tags:
     - pass
 
-- name: Install pass
+- name: Install pass extensions
   ansible.builtin.apt:
     state: present
     update_cache: yes
     name:
-      - pass
       - pass-extension-import   
   tags:
     - pass
