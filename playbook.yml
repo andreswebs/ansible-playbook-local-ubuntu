@@ -132,3 +132,9 @@
         name: andreswebs.nodejs
       tags:
         - nodejs
+
+    - name: Flatpak
+      include_tasks: tasks/flatpak.yml
+      when: flatpak is defined
+      tags:
+        - flatpak      
