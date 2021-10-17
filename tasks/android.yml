@@ -1,0 +1,11 @@
+---
+- name: Install Android tools
+  ansible.builtin.apt:
+    state: present
+    update_cache: yes
+    name:
+      - android-sdk-platform-tools
+      - android-sdk-platform-tools-common   
+  tags:
+    - android
+    

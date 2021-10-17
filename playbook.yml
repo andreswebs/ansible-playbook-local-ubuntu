@@ -137,4 +137,11 @@
       include_tasks: tasks/flatpak.yml
       when: flatpak is defined
       tags:
-        - flatpak      
+        - flatpak
+
+    - name: Android
+      include_tasks: tasks/android.yml
+      when: android is defined
+      tags:
+        - android
+        
