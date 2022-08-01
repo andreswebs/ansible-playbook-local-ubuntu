@@ -13,6 +13,7 @@
       - bridge-utils 
       - dnsmasq
       - libosinfo-bin
+      - virt-manager
   tags:
     - system
     - qemu
