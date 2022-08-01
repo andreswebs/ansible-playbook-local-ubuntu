@@ -12,6 +12,7 @@
       - virtinst 
       - bridge-utils 
       - dnsmasq
+      - libosinfo-bin
   tags:
     - system
     - qemu
