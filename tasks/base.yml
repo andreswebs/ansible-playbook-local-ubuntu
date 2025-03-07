@@ -12,19 +12,6 @@
     - system
     - upgrade
 
-- name: base | Install basic security packages
-  ansible.builtin.apt:
-    state: present
-    update_cache: true
-    name:
-      - ufw
-      - unattended-upgrades
-      - iptables-persistent
-      - logcheck
-  tags:
-    - system
-    - sec
-
 - name: base | Install apparmor
   ansible.builtin.apt:
     state: present
