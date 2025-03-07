@@ -1,0 +1,6 @@
+---
+roles:
+  - name: andreswebs.docker
+
+collections:
+  - name: community.general

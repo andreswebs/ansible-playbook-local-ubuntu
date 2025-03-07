@@ -2,146 +2,41 @@
 ---
 - name: Ubuntu
   hosts: "{{ custom_hosts | default('all') }}"
-  become: yes
-  become_method: sudo
-  gather_facts: yes
+  become: true
+  become_method: ansible.builtin.sudo
+  gather_facts: true
 
   tasks:
-    - name: Upgrade system
-      ansible.builtin.apt:
-        update_cache: yes
-        upgrade: dist
-        autoremove: yes
-        autoclean: yes
-      async: 3600
-      poll: 5
+    - name: Base
+      ansible.builtin.include_tasks: tasks/base.yml
       tags:
-        - system
-        - upgrade
+        - base
 
-    - name: Install basic security packages
-      ansible.builtin.apt:
-        state: present
-        update_cache: yes
-        name:
-          - ufw
-          - unattended-upgrades
-          - iptables-persistent
-          - logcheck
+    - name: Desktop
+      ansible.builtin.include_tasks: tasks/desktop.yml
       tags:
-        - system
-        - sec
-
-    - name: Install apparmor
-      ansible.builtin.apt:
-        state: present
-        update_cache: yes
-        name:
-          - apparmor 
-          - apparmor-profiles 
-          - apparmor-profiles-extra 
-          - apparmor-utils
-      tags:
-        - system
-        - apparmor
-
-    - name: Install python libs
-      ansible.builtin.apt:
-        state: present
-        update_cache: yes
-        name:
-          - python3
-          - python3-pip
-          - python3-venv
-          - python3-apt
-          - python3-setuptools
-          - python3-yaml
-          - python3-defusedxml
-          - python3-cairo
-          - python3-dbus
-          - python3-gi
-          - python3-pbr
-      tags:
-        - system
-        - tools
-        - python
-        
-    - name: Install tools
-      ansible.builtin.apt:
-        state: present
-        update_cache: yes
-        name:
-          - rsync
-          - vim
-          - vim-gui-common
-          - vim-runtime
-          - gettext-base
-          - tmux
-          - htop
-          - curl
-          - expect
-          - tree
-          - build-essential 
-          - procps
-          - file
-          - acl
-          - git
-          - jq
-          - p7zip-full
-          - zip
-          - unzip
-          - unrar-free
-          - arj
-          - ark
-          - unp    
-          - bash-completion
-          - apt-transport-https
-          - apt-file
-          - command-not-found
-          - gnupg2
-          - gnupg-agent
-          - pwgen
-          - resolvconf
-          - nmap
-          - tcpdump
-          - dnsutils
-          - dsniff
-          - telnet
-          - ipcalc
-          - iptraf
-          - nethogs
-          - renameutils # qmv, qcp, et al.
-          - units
-          - software-properties-common
-          - strace
-          - cmake
-          - lshw
-          - ccze
-      tags:
-        - system
-        - tools   
-
-    - name: Role andreswebs.docker
-      include_role:
-        name: andreswebs.docker
-      tags:
-        - docker
-
-    - name: Role andreswebs.nodejs
-      include_role:
-        name: andreswebs.nodejs
-      tags:
-        - nodejs
+        - desktop
 
     - name: Flatpak
-      include_tasks: tasks/flatpak.yml
+      ansible.builtin.include_tasks: tasks/flatpak.yml
       when: flatpak is defined
       tags:
         - flatpak
 
     - name: Android
-      include_tasks: tasks/android.yml
+      ansible.builtin.include_tasks: tasks/android.yml
       when: android is defined
       tags:
         - android
-        
+
+    - name: Notes
+      ansible.builtin.include_tasks: tasks/notes.yml
+      when: android is defined
+      tags:
+        - android
+
+    - name: Role andreswebs.docker
+      ansible.builtin.include_role:
+        name: andreswebs.docker
+      tags:
+        - docker

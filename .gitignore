@@ -1,0 +1,7 @@
+.envrc
+.DS_Store
+ansible-lint.result.sarif
+.cache
+.ansible
+inventory/hosts.ini
+vars/
