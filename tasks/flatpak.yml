@@ -13,8 +13,8 @@
     state: present
     update_cache: true
     name:
-      - gnome-software
-      - gnome-software-plugin-flatpak
+      - xdg-desktop-portal
+      - xdg-desktop-portal-xapp
   tags:
     - flatpak
 
