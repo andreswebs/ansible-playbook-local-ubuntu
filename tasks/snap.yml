@@ -1,0 +1,9 @@
+---
+- name: desktop | Install telegram
+  community.general.snap:
+    state: present
+    name:
+      - telegram-desktop
+  when: snap is defined
+  tags:
+    - telegram

@@ -26,3 +26,12 @@
     flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
   tags:
     - flatpak
+
+- name: flatpak | Install telegram
+  community.general.flatpak:
+    state: present
+    remote: flathub
+    name:
+      - org.telegram.desktop
+  tags:
+    - telegram

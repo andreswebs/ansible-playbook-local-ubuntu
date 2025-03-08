@@ -12,20 +12,20 @@
       tags:
         - base
 
-    - name: Flatpak
-      ansible.builtin.include_tasks: tasks/flatpak.yml
-      tags:
-        - flatpak
-
     - name: Desktop
       ansible.builtin.include_tasks: tasks/desktop.yml
       tags:
         - desktop
 
+    - name: Flatpak
+      ansible.builtin.include_tasks: tasks/flatpak.yml
+      tags:
+        - flatpak
+
     - name: Notes
       ansible.builtin.include_tasks: tasks/notes.yml
       tags:
-        - android
+        - notes
 
     - name: Android
       ansible.builtin.include_tasks: tasks/android.yml
@@ -36,5 +36,6 @@
     - name: Role andreswebs.docker
       ansible.builtin.include_role:
         name: andreswebs.docker
+      when: docker is defined
       tags:
         - docker
