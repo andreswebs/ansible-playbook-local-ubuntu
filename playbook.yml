@@ -12,25 +12,23 @@
       tags:
         - base
 
+    - name: Flatpak
+      ansible.builtin.include_tasks: tasks/flatpak.yml
+      tags:
+        - flatpak
+
     - name: Desktop
       ansible.builtin.include_tasks: tasks/desktop.yml
       tags:
         - desktop
 
-    - name: Flatpak
-      ansible.builtin.include_tasks: tasks/flatpak.yml
-      when: flatpak is defined
-      tags:
-        - flatpak
-
-    - name: Android
-      ansible.builtin.include_tasks: tasks/android.yml
-      when: android is defined
+    - name: Notes
+      ansible.builtin.include_tasks: tasks/notes.yml
       tags:
         - android
 
-    - name: Notes
-      ansible.builtin.include_tasks: tasks/notes.yml
+    - name: Android
+      ansible.builtin.include_tasks: tasks/android.yml
       when: android is defined
       tags:
         - android

@@ -16,11 +16,21 @@
       - gufw
   tags:
     - desktop
+#
+#
+# - name: desktop | Install telegram
+#   community.general.snap:
+#     state: present
+#     name:
+#       - telegram-desktop
+#   tags:
+#     - telegram
 
-- name: desktop | Install telegram-desktop
-  community.general.snap:
+- name: desktop | Install telegram
+  community.general.flatpak:
     state: present
+    remote: flathub
     name:
-      - telegram-desktop
+      - org.telegram.desktop
   tags:
-    - telegram
+    - desktop
