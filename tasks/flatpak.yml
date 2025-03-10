@@ -27,11 +27,13 @@
   tags:
     - flatpak
 
-- name: flatpak | Install telegram
+- name: flatpak | Install packages
   community.general.flatpak:
     state: present
     remote: flathub
     name:
       - org.telegram.desktop
+      - com.google.Chrome
+      - com.bitwarden.desktop
   tags:
     - telegram
