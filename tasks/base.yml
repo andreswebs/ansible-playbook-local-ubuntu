@@ -80,7 +80,6 @@
       - command-not-found
       - gnupg
       - pwgen
-      - resolvconf
       - nmap
       - tcpdump
       - dnsutils
